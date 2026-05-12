@@ -44,7 +44,7 @@ async def registro(data: RegistroRequest, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(usuario)
     
-    token = crear_token({"sub": usuario.id, "rol": usuario.rol})
+    token = crear_token({"sub": str(usuario.id), "rol": usuario.rol})
     return TokenResponse(access_token=token, rol=usuario.rol, nombre=usuario.nombre, id=usuario.id)
 
 @router.post("/login", response_model=TokenResponse)
@@ -61,7 +61,7 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
     usuario.ultimo_acceso = datetime.utcnow()
     await db.commit()
     
-    token = crear_token({"sub": usuario.id, "rol": usuario.rol})
+    token = crear_token({"sub": str(usuario.id), "rol": usuario.rol})
     return TokenResponse(access_token=token, rol=usuario.rol, nombre=usuario.nombre, id=usuario.id)
 
 @router.get("/me")

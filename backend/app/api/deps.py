@@ -17,7 +17,7 @@ async def get_current_user(
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
     
-    result = await db.execute(select(Usuario).where(Usuario.id == payload.get("sub")))
+    result = await db.execute(select(Usuario).where(Usuario.id == int(payload.get("sub"))))
     user = result.scalar_one_or_none()
     
     if not user or not user.activo:

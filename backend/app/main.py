@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import init_db
 from app.api import auth
+from app.api import restaurantes
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(restaurantes.router)
 
 @app.on_event("startup")
 async def startup():
