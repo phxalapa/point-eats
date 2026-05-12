@@ -2,6 +2,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from app.core.config import settings
 from app.models.usuario import Base
 import app.models.restaurante
+import app.models.pedido
+import app.models.mensaje
 
 engine = create_async_engine(settings.DATABASE_URL, echo=settings.DEBUG)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
