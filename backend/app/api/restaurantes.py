@@ -5,13 +5,13 @@ from pydantic import BaseModel
 from typing import Optional, List
 from app.core.database import get_db
 from app.models.restaurante import Restaurante, Platillo
-from app.models.usuario import RolUsuario
+from app.models.usuario import RolUsuario, Usuario
 from app.api.deps import get_current_user, require_rol
-from app.models.usuario import Usuario
 
 router = APIRouter(prefix="/restaurantes", tags=["Restaurantes"])
 
 # ── Schemas ──────────────────────────────────────────
+
 class RestauranteCreate(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
@@ -34,6 +34,15 @@ class PlatilloCreate(BaseModel):
 class ToggleAbierto(BaseModel):
     abierto: bool
 
+class DatosBancariosUpdate(BaseModel):
+    banco_nombre: Optional[str] = None
+    banco_titular: Optional[str] = None
+    banco_cuenta: Optional[str] = None
+    banco_tarjeta: Optional[str] = None
+    banco_clabe: Optional[str] = None
+    mercadopago_public_key: Optional[str] = None
+    mercadopago_access_token: Optional[str] = None
+
 # ── Endpoints cliente ─────────────────────────────────
 
 @router.get("/")
@@ -42,7 +51,6 @@ async def listar_restaurantes(
     categoria: Optional[str] = None,
     db: AsyncSession = Depends(get_db)
 ):
-    """Lista de restaurantes — la pantalla de contactos del cliente"""
     query = select(Restaurante)
     if ciudad:
         query = query.where(Restaurante.ciudad == ciudad)
@@ -70,14 +78,13 @@ async def listar_restaurantes(
 
 @router.get("/{restaurante_id}/menu")
 async def ver_menu(restaurante_id: int, db: AsyncSession = Depends(get_db)):
-    """Menú completo de un restaurante — se muestra dentro del chat"""
     result = await db.execute(
         select(Restaurante).where(Restaurante.id == restaurante_id)
     )
     restaurante = result.scalar_one_or_none()
     if not restaurante:
         raise HTTPException(status_code=404, detail="Restaurante no encontrado")
-    
+
     platillos_result = await db.execute(
         select(Platillo)
         .where(Platillo.restaurante_id == restaurante_id)
@@ -85,8 +92,7 @@ async def ver_menu(restaurante_id: int, db: AsyncSession = Depends(get_db)):
         .order_by(Platillo.destacado.desc(), Platillo.orden)
     )
     platillos = platillos_result.scalars().all()
-    
-    # Agrupar por categoría
+
     menu = {}
     for p in platillos:
         cat = p.categoria or "General"
@@ -100,7 +106,7 @@ async def ver_menu(restaurante_id: int, db: AsyncSession = Depends(get_db)):
             "foto_url": p.foto_url,
             "destacado": p.destacado,
         })
-    
+
     return {
         "restaurante": {
             "id": restaurante.id,
@@ -109,11 +115,17 @@ async def ver_menu(restaurante_id: int, db: AsyncSession = Depends(get_db)):
             "tiempo_entrega_min": restaurante.tiempo_entrega_min,
             "pedido_minimo": restaurante.pedido_minimo,
             "calificacion": restaurante.calificacion,
+            "banco_nombre": restaurante.banco_nombre,
+            "banco_titular": restaurante.banco_titular,
+            "banco_cuenta": restaurante.banco_cuenta,
+            "banco_tarjeta": restaurante.banco_tarjeta,
+            "banco_clabe": restaurante.banco_clabe,
+            "mercadopago_public_key": restaurante.mercadopago_public_key,
         },
         "menu": menu
     }
 
-# ── Endpoints restaurante (requiere rol) ──────────────
+# ── Endpoints restaurante ─────────────────────────────
 
 @router.post("/mi-perfil")
 async def crear_perfil(
@@ -121,13 +133,12 @@ async def crear_perfil(
     user: Usuario = Depends(require_rol(RolUsuario.restaurante)),
     db: AsyncSession = Depends(get_db)
 ):
-    """El restaurante crea su perfil por primera vez"""
     existe = await db.execute(
         select(Restaurante).where(Restaurante.usuario_id == user.id)
     )
     if existe.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Ya tienes un perfil creado")
-    
+
     restaurante = Restaurante(usuario_id=user.id, **data.model_dump())
     db.add(restaurante)
     await db.commit()
@@ -140,14 +151,13 @@ async def agregar_platillo(
     user: Usuario = Depends(require_rol(RolUsuario.restaurante)),
     db: AsyncSession = Depends(get_db)
 ):
-    """El restaurante agrega un platillo a su menú"""
     resto_result = await db.execute(
         select(Restaurante).where(Restaurante.usuario_id == user.id)
     )
     restaurante = resto_result.scalar_one_or_none()
     if not restaurante:
         raise HTTPException(status_code=404, detail="Primero crea tu perfil")
-    
+
     platillo = Platillo(restaurante_id=restaurante.id, **data.model_dump())
     db.add(platillo)
     await db.commit()
@@ -160,15 +170,33 @@ async def toggle_abierto(
     user: Usuario = Depends(require_rol(RolUsuario.restaurante)),
     db: AsyncSession = Depends(get_db)
 ):
-    """El restaurante abre o cierra con un toggle — el punto verde de WhatsApp"""
     resto_result = await db.execute(
         select(Restaurante).where(Restaurante.usuario_id == user.id)
     )
     restaurante = resto_result.scalar_one_or_none()
     if not restaurante:
         raise HTTPException(status_code=404, detail="Perfil no encontrado")
-    
+
     restaurante.abierto = data.abierto
     await db.commit()
     estado = "abierto 🟢" if data.abierto else "cerrado 🔴"
-    return {"mensaje": f"Restaurante {estado}"} 
+    return {"mensaje": f"Restaurante {estado}"}
+
+@router.patch("/mi-perfil/datos-bancarios")
+async def actualizar_datos_bancarios(
+    data: DatosBancariosUpdate,
+    user: Usuario = Depends(require_rol(RolUsuario.restaurante)),
+    db: AsyncSession = Depends(get_db)
+):
+    resto_result = await db.execute(
+        select(Restaurante).where(Restaurante.usuario_id == user.id)
+    )
+    restaurante = resto_result.scalar_one_or_none()
+    if not restaurante:
+        raise HTTPException(status_code=404, detail="Perfil no encontrado")
+
+    for campo, valor in data.model_dump(exclude_none=True).items():
+        setattr(restaurante, campo, valor)
+
+    await db.commit()
+    return {"mensaje": "Datos bancarios actualizados"}
