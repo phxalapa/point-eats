@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import auth, restaurantes, pedidos, chat
+from app.api import auth, restaurantes, pedidos, chat, media, promociones
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -22,6 +22,8 @@ app.include_router(auth.router)
 app.include_router(restaurantes.router)
 app.include_router(pedidos.router)
 app.include_router(chat.router)
+app.include_router(media.router)
+app.include_router(promociones.router)
 
 @app.on_event("startup")
 async def startup():

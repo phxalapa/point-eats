@@ -4,6 +4,7 @@ from app.models.usuario import Base
 import app.models.restaurante
 import app.models.pedido
 import app.models.mensaje
+import app.models.promocion
 
 engine = create_async_engine(settings.DATABASE_URL, echo=settings.DEBUG)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
