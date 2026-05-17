@@ -8,21 +8,30 @@ class Restaurante(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), unique=True, nullable=False)
-    
+
+    # Identidad
     nombre = Column(String(100), nullable=False)
     descripcion = Column(Text, nullable=True)
     foto_url = Column(String(500), nullable=True)
+    portada_url = Column(String(500), nullable=True)
     categoria = Column(String(50), nullable=True)
+
+    # Contacto y ubicación
     telefono = Column(String(20), nullable=True)
     direccion = Column(String(300), nullable=True)
     ciudad = Column(String(100), nullable=True)
+    maps_url = Column(String(500), nullable=True)
+
+    # Operación
     abierto = Column(Boolean, default=False)
     tiempo_entrega_min = Column(Integer, default=30)
     pedido_minimo = Column(Float, default=0.0)
-    calificacion = Column(Float, default=5.0)
-    total_pedidos = Column(Integer, default=0)
     horario_apertura = Column(String(5), default="09:00")
     horario_cierre = Column(String(5), default="22:00")
+
+    # Métricas
+    calificacion = Column(Float, default=5.0)
+    total_pedidos = Column(Integer, default=0)
 
     # Datos bancarios
     banco_nombre = Column(String(100), nullable=True)

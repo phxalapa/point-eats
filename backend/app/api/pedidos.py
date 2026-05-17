@@ -39,7 +39,6 @@ async def crear_pedido(
     user: Usuario = Depends(require_rol(RolUsuario.cliente)),
     db: AsyncSession = Depends(get_db)
 ):
-    # Verificar restaurante abierto
     resto = await db.execute(
         select(Restaurante).where(Restaurante.id == data.restaurante_id)
     )
@@ -49,7 +48,6 @@ async def crear_pedido(
     if not restaurante.abierto:
         raise HTTPException(status_code=400, detail="El restaurante está cerrado")
 
-    # Crear pedido
     pedido = Pedido(
         folio=generar_folio(),
         cliente_id=user.id,
@@ -60,8 +58,8 @@ async def crear_pedido(
     db.add(pedido)
     await db.flush()
 
-    # Agregar items con snapshot de precio
     total = 0.0
+    items_detalle = []
     for item_data in data.items:
         platillo_result = await db.execute(
             select(Platillo).where(
@@ -87,19 +85,25 @@ async def crear_pedido(
             notas=item_data.notas
         )
         db.add(item)
+        items_detalle.append({
+            "nombre": platillo.nombre,
+            "cantidad": item_data.cantidad,
+            "precio": platillo.precio,
+            "subtotal": subtotal
+        })
 
     pedido.subtotal = total
     pedido.total = total
 
-    # Mensaje automático de sistema
+    # Mensaje automático con detalle del pedido
+    detalle_texto = "\n".join([f"• {i['cantidad']}x {i['nombre']} — ${i['subtotal']:.2f}" for i in items_detalle])
     msg = Mensaje(
         pedido_id=pedido.id,
         autor_id=None,
         tipo=TipoMensaje.pedido,
-        contenido=f"Nuevo pedido {pedido.folio} por ${total:.2f}"
+        contenido=f"🛒 Nuevo pedido {pedido.folio}\n{detalle_texto}\n💰 Total: ${total:.2f}"
     )
     db.add(msg)
-
     await db.commit()
     await db.refresh(pedido)
 
@@ -107,7 +111,8 @@ async def crear_pedido(
         "folio": pedido.folio,
         "pedido_id": pedido.id,
         "total": pedido.total,
-        "estado": pedido.estado
+        "estado": pedido.estado,
+        "items": items_detalle
     }
 
 @router.get("/mis-pedidos")
@@ -130,16 +135,103 @@ async def mis_pedidos(
     result = await db.execute(query)
     pedidos = result.scalars().all()
 
-    return [
-        {
+    pedidos_completos = []
+    for p in pedidos:
+        items_result = await db.execute(
+            select(ItemPedido).where(ItemPedido.pedido_id == p.id)
+        )
+        items = items_result.scalars().all()
+
+        cliente_result = await db.execute(
+            select(Usuario).where(Usuario.id == p.cliente_id)
+        )
+        cliente = cliente_result.scalar_one_or_none()
+
+        pedidos_completos.append({
             "id": p.id,
             "folio": p.folio,
             "estado": p.estado,
             "total": p.total,
+            "subtotal": p.subtotal,
+            "notas": p.notas,
+            "direccion_entrega": p.direccion_entrega,
             "creado_en": p.creado_en,
-        }
-        for p in pedidos
-    ]
+            "confirmado_en": p.confirmado_en,
+            "entregado_en": p.entregado_en,
+            "cliente_nombre": cliente.nombre if cliente else "Cliente",
+            "cliente_telefono": cliente.telefono if cliente else None,
+            "items": [
+                {
+                    "id": i.id,
+                    "nombre": i.nombre_snapshot,
+                    "precio": i.precio_snapshot,
+                    "cantidad": i.cantidad,
+                    "subtotal": i.subtotal,
+                    "notas": i.notas
+                }
+                for i in items
+            ]
+        })
+
+    return pedidos_completos
+
+@router.get("/{pedido_id}/detalle")
+async def detalle_pedido(
+    pedido_id: int,
+    user: Usuario = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(Pedido).where(Pedido.id == pedido_id))
+    pedido = result.scalar_one_or_none()
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+
+    items_result = await db.execute(
+        select(ItemPedido).where(ItemPedido.pedido_id == pedido_id)
+    )
+    items = items_result.scalars().all()
+
+    cliente_result = await db.execute(
+        select(Usuario).where(Usuario.id == pedido.cliente_id)
+    )
+    cliente = cliente_result.scalar_one_or_none()
+
+    resto_result = await db.execute(
+        select(Restaurante).where(Restaurante.id == pedido.restaurante_id)
+    )
+    restaurante = resto_result.scalar_one_or_none()
+
+    return {
+        "id": pedido.id,
+        "folio": pedido.folio,
+        "estado": pedido.estado,
+        "total": pedido.total,
+        "subtotal": pedido.subtotal,
+        "notas": pedido.notas,
+        "direccion_entrega": pedido.direccion_entrega,
+        "creado_en": pedido.creado_en,
+        "cliente": {
+            "nombre": cliente.nombre if cliente else "Cliente",
+            "telefono": cliente.telefono if cliente else None,
+            "email": cliente.email if cliente else None,
+        },
+        "restaurante": {
+            "nombre": restaurante.nombre if restaurante else "",
+            "direccion": restaurante.direccion if restaurante else "",
+            "telefono": restaurante.telefono if restaurante else "",
+        },
+        "items": [
+            {
+                "id": i.id,
+                "nombre": i.nombre_snapshot,
+                "precio": i.precio_snapshot,
+                "cantidad": i.cantidad,
+                "subtotal": i.subtotal,
+                "notas": i.notas
+            }
+            for i in items
+        ]
+    }
 
 @router.patch("/{pedido_id}/estado")
 async def cambiar_estado(
@@ -156,21 +248,22 @@ async def cambiar_estado(
     pedido.estado = data.estado
     if data.estado == EstadoPedido.entregado:
         pedido.entregado_en = datetime.utcnow()
+    if data.estado == EstadoPedido.confirmado:
+        pedido.confirmado_en = datetime.utcnow()
 
-    # Mensaje automático de cambio de estado
     emojis = {
         "confirmado": "✅", "preparando": "👨‍🍳",
         "listo": "🎉", "en_camino": "🛵",
         "entregado": "✅", "cancelado": "❌"
     }
-    emoji = emojis.get(data.estado, "📢")
+    emoji = emojis.get(data.estado.value, "📢")
     msg = Mensaje(
         pedido_id=pedido_id,
         autor_id=user.id,
         tipo=TipoMensaje.estado,
-        contenido=f"{emoji} Tu pedido está: {data.estado.upper()}"
+        contenido=f"{emoji} Tu pedido está: {data.estado.value.upper()}"
     )
     db.add(msg)
     await db.commit()
 
-    return {"mensaje": f"Estado actualizado a {data.estado}", "folio": pedido.folio} 
+    return {"mensaje": f"Estado actualizado a {data.estado}", "folio": pedido.folio}

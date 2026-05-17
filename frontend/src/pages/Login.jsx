@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { authService } from '../services/api'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -14,15 +13,29 @@ export default function Login() {
     setCargando(true)
     setError('')
     try {
-      const res = await authService.login(email, password)
-      localStorage.setItem('token', res.data.access_token)
-      localStorage.setItem('rol', res.data.rol)
-      localStorage.setItem('nombre', res.data.nombre)
-      localStorage.setItem('usuario_id', res.data.id)
-      if (res.data.rol === 'restaurante') navigate('/panel')
+      const res = await fetch('http://127.0.0.1:8000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.detail || 'Credenciales incorrectas')
+        return
+      }
+
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('rol', data.rol)
+      localStorage.setItem('nombre', data.nombre)
+      localStorage.setItem('usuario_id', data.id)
+
+      if (data.rol === 'admin') navigate('/admin')
+      else if (data.rol === 'restaurante') navigate('/panel')
       else navigate('/contactos')
-    } catch {
-      setError('Email o contraseña incorrectos')
+
+    } catch (err) {
+      setError('Error de conexión. Verifica que el servidor esté corriendo.')
     } finally {
       setCargando(false)
     }
@@ -31,12 +44,9 @@ export default function Login() {
   return (
     <div style={e.contenedor}>
       <div style={e.tarjeta}>
-        <img
-          src="https://http2.mlstatic.com/frontend-assets/mp-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large@2x.png"
-          alt="Point Eats"
-          style={e.logo}
-          onError={ev => ev.target.style.display='none'}
-        />
+        <div style={e.logoWrap}>
+          <span style={e.logoEmoji}>🍽️</span>
+        </div>
         <h1 style={e.titulo}>Point Eats</h1>
         <p style={e.subtitulo}>Tu comida favorita, como un mensaje</p>
 
@@ -86,62 +96,46 @@ const e = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
-    fontFamily: "'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    fontFamily: "'Nunito','Helvetica Neue',Helvetica,Arial,sans-serif"
   },
   tarjeta: {
     background: '#FFFFFF',
-    borderRadius: '6px',
+    borderRadius: '16px',
     padding: '40px 32px',
     width: '100%',
     maxWidth: '400px',
-    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.12)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
     textAlign: 'center'
   },
-  logo: { height: '34px', marginBottom: '24px' },
-  titulo: {
-    color: '#009EE3',
-    fontSize: '28px',
-    fontWeight: '600',
-    margin: '0 0 4px'
+  logoWrap: {
+    width: '72px', height: '72px', borderRadius: '50%',
+    background: 'linear-gradient(135deg, #009EE3, #0077B6)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    margin: '0 auto 16px'
   },
-  subtitulo: {
-    color: '#666666',
-    fontSize: '16px',
-    margin: '0 0 32px'
-  },
+  logoEmoji: { fontSize: '32px' },
+  titulo: { color: '#009EE3', fontSize: '28px', fontWeight: '800', margin: '0 0 4px' },
+  subtitulo: { color: '#666', fontSize: '15px', margin: '0 0 32px' },
   form: { display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' },
   campo: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { color: '#333333', fontSize: '14px', fontWeight: '500' },
+  label: { color: '#333', fontSize: '14px', fontWeight: '600' },
   input: {
-    border: '1px solid #CCCCCC',
-    borderRadius: '6px',
-    padding: '12px 14px',
-    fontSize: '16px',
-    color: '#333333',
-    outline: 'none',
-    background: '#FFFFFF',
-    transition: 'border-color 0.2s'
+    border: '1px solid #CCCCCC', borderRadius: '8px',
+    padding: '13px 14px', fontSize: '16px', color: '#333',
+    outline: 'none', background: '#FAFAFA', fontFamily: 'inherit',
+    width: '100%', boxSizing: 'border-box'
   },
   boton: {
-    background: '#009EE3',
-    border: 'none',
-    borderRadius: '6px',
-    padding: '14px',
-    color: '#FFFFFF',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '8px',
-    letterSpacing: '0.3px'
+    background: '#009EE3', border: 'none', borderRadius: '8px',
+    padding: '14px', color: '#FFFFFF', fontSize: '16px',
+    fontWeight: '700', cursor: 'pointer', marginTop: '8px',
+    width: '100%'
   },
   error: {
-    background: '#FFF0F0',
-    border: '1px solid #F23D4F',
-    borderRadius: '6px',
-    padding: '10px 14px',
-    color: '#F23D4F',
-    fontSize: '14px'
+    background: '#FFF0F0', border: '1px solid #F23D4F',
+    borderRadius: '8px', padding: '10px 14px',
+    color: '#F23D4F', fontSize: '14px', textAlign: 'center'
   },
-  registro: { color: '#666666', fontSize: '14px', marginTop: '24px' },
-  link: { color: '#009EE3', textDecoration: 'none', fontWeight: '500' }
+  registro: { color: '#666', fontSize: '14px', marginTop: '24px' },
+  link: { color: '#009EE3', textDecoration: 'none', fontWeight: '600' }
 }
