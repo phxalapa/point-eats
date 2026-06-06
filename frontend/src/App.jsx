@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
+import Registro from './pages/Registro'
 import Contactos from './pages/Contactos'
 import Chat from './pages/Chat'
+import PerfilCliente from './pages/PerfilCliente'
+import HistorialPedidos from './pages/HistorialPedidos'
 import Panel from './pages/Panel'
 import PanelPedidos from './pages/PanelPedidos'
 import PanelMenu from './pages/PanelMenu'
@@ -29,11 +32,18 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
         <Route path="/contactos" element={
           <ProtectedRoute rol="cliente"><Contactos /></ProtectedRoute>
         } />
         <Route path="/chat/:restauranteId" element={
           <ProtectedRoute rol="cliente"><Chat /></ProtectedRoute>
+        } />
+        <Route path="/perfil" element={
+          <ProtectedRoute rol="cliente"><PerfilCliente /></ProtectedRoute>
+        } />
+        <Route path="/historial" element={
+          <ProtectedRoute rol="cliente"><HistorialPedidos /></ProtectedRoute>
         } />
         <Route path="/panel" element={
           <ProtectedRoute rol="restaurante"><Panel /></ProtectedRoute>

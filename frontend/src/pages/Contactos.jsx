@@ -23,14 +23,15 @@ export default function Contactos() {
 
   return (
     <div style={e.contenedor}>
-      {/* Header estilo MercadoPago */}
+      {/* Header */}
       <div style={e.header}>
         <div style={e.headerIzq}>
           <span style={e.headerLogo}>🍽️</span>
           <span style={e.headerTitulo}>Point Eats</span>
         </div>
         <div style={e.headerDer}>
-          <span style={e.saludo}>Hola, {nombre}</span>
+          <button onClick={() => navigate('/perfil')} style={e.btnPerfil}>👤</button>
+          <button onClick={() => navigate('/historial')} style={e.btnPerfil}>🧾</button>
           <button onClick={cerrarSesion} style={e.botonSalir}>Salir</button>
         </div>
       </div>
@@ -65,24 +66,17 @@ export default function Contactos() {
             <div style={e.avatarWrap}>
               <div style={e.avatar}>
                 {r.foto_url
-                  ? <img src={r.foto_url} style={e.avatarImg} alt={r.nombre}/>
+                  ? <img src={r.foto_url} style={e.avatarImg} alt={r.nombre} />
                   : <span style={e.avatarEmoji}>🍽️</span>
                 }
               </div>
-              <span style={{
-                ...e.badge,
-                background: r.abierto ? '#00A650' : '#CCCCCC'
-              }}/>
+              <span style={{ ...e.badge, background: r.abierto ? '#00A650' : '#CCCCCC' }} />
             </div>
 
             <div style={e.info}>
               <div style={e.fila}>
                 <span style={e.nombre}>{r.nombre}</span>
-                <span style={{
-                  ...e.estadoTag,
-                  background: r.abierto ? '#F0FFF7' : '#F5F5F5',
-                  color: r.abierto ? '#00A650' : '#999999'
-                }}>
+                <span style={{ ...e.estadoTag, background: r.abierto ? '#F0FFF7' : '#F5F5F5', color: r.abierto ? '#00A650' : '#999999' }}>
                   {r.abierto ? 'Abierto' : 'Cerrado'}
                 </span>
               </div>
@@ -103,85 +97,31 @@ export default function Contactos() {
 }
 
 const e = {
-  contenedor: {
-    background: '#F5F5F5',
-    minHeight: '100vh',
-    maxWidth: '480px',
-    margin: '0 auto',
-    fontFamily: "'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-  },
-  header: {
-    background: '#009EE3',
-    padding: '14px 20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    position: 'sticky',
-    top: 0,
-    zIndex: 10
-  },
+  contenedor: { background: '#F5F5F5', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', fontFamily: "'Nunito','Helvetica Neue',Helvetica,Arial,sans-serif" },
+  header: { background: '#009EE3', padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 10 },
   headerIzq: { display: 'flex', alignItems: 'center', gap: '8px' },
   headerLogo: { fontSize: '22px' },
   headerTitulo: { color: '#FFFFFF', fontSize: '18px', fontWeight: '600' },
-  headerDer: { display: 'flex', alignItems: 'center', gap: '12px' },
-  saludo: { color: 'rgba(255,255,255,0.85)', fontSize: '13px' },
-  botonSalir: {
-    background: 'rgba(255,255,255,0.2)',
-    border: 'none',
-    borderRadius: '4px',
-    color: '#FFFFFF',
-    padding: '6px 12px',
-    fontSize: '13px',
-    cursor: 'pointer'
-  },
+  headerDer: { display: 'flex', alignItems: 'center', gap: '8px' },
+  btnPerfil: { background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px', color: '#fff', width: '34px', height: '34px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  botonSalir: { background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '4px', color: '#FFFFFF', padding: '6px 12px', fontSize: '13px', cursor: 'pointer' },
   buscadorWrap: { background: '#009EE3', padding: '0 16px 16px' },
-  buscadorContenedor: {
-    background: '#FFFFFF',
-    borderRadius: '6px',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 14px',
-    gap: '8px'
-  },
+  buscadorContenedor: { background: '#FFFFFF', borderRadius: '6px', display: 'flex', alignItems: 'center', padding: '10px 14px', gap: '8px' },
   buscadorIcono: { fontSize: '16px' },
-  buscador: {
-    flex: 1, border: 'none', outline: 'none',
-    fontSize: '15px', color: '#333333', background: 'transparent'
-  },
+  buscador: { flex: 1, border: 'none', outline: 'none', fontSize: '15px', color: '#333333', background: 'transparent' },
   seccion: { padding: '16px 20px 8px' },
   seccionTitulo: { color: '#666666', fontSize: '13px', margin: 0, fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.5px' },
   lista: { padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' },
-  tarjeta: {
-    background: '#FFFFFF',
-    borderRadius: '6px',
-    padding: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '14px',
-    cursor: 'pointer',
-    boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-    border: '1px solid #EEEEEE'
-  },
+  tarjeta: { background: '#FFFFFF', borderRadius: '6px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.08)', border: '1px solid #EEEEEE' },
   avatarWrap: { position: 'relative', flexShrink: 0 },
-  avatar: {
-    width: '52px', height: '52px', borderRadius: '50%',
-    background: '#E8F7FF', display: 'flex',
-    alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
-  },
+  avatar: { width: '52px', height: '52px', borderRadius: '50%', background: '#E8F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarImg: { width: '100%', height: '100%', objectFit: 'cover' },
   avatarEmoji: { fontSize: '24px' },
-  badge: {
-    position: 'absolute', bottom: '2px', right: '2px',
-    width: '13px', height: '13px', borderRadius: '50%',
-    border: '2px solid #FFFFFF'
-  },
+  badge: { position: 'absolute', bottom: '2px', right: '2px', width: '13px', height: '13px', borderRadius: '50%', border: '2px solid #FFFFFF' },
   info: { flex: 1, minWidth: 0 },
   fila: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' },
   nombre: { color: '#333333', fontSize: '16px', fontWeight: '600' },
-  estadoTag: {
-    fontSize: '11px', fontWeight: '600', padding: '2px 8px',
-    borderRadius: '20px', flexShrink: 0
-  },
+  estadoTag: { fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '20px', flexShrink: 0 },
   desc: { color: '#666666', fontSize: '13px', margin: '4px 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   meta: { color: '#999999', fontSize: '12px' },
   flecha: { color: '#CCCCCC', fontSize: '24px', flexShrink: 0 },
