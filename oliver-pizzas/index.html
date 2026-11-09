@@ -7,6 +7,13 @@
 <meta name="description" content="Oliver Pizzas — Sabor y calidad. Pizzas 2x1, paquetes y especialidades. Haz tu pedido por WhatsApp. Entrega a domicilio gratis en Xalapa.">
 <meta name="theme-color" content="#0d0d0d">
 <link rel="icon" href="img/logo.jpg">
+<script>
+/* Tema: elección del visitante > preferencia del sistema. */
+(function(){var t=null;try{t=localStorage.getItem("oliver_tema")}catch(e){}
+if(t!=="light"&&t!=="dark"){try{var c=JSON.parse(localStorage.getItem("oliver_cfg_v1"));t=c&&c.negocio&&c.negocio.tema}catch(e){}}
+if(t!=="light"&&t!=="dark"){t=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}
+document.documentElement.setAttribute("data-theme",t)})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,18 +22,30 @@
   --bg:#0d0d0d; --panel:#161616; --panel2:#1e1e1e; --line:#2b2b2b;
   --orange:#ff5a1f; --orange2:#ff7a35; --yellow:#ffc531;
   --text:#f6f6f6; --muted:#a6a6a6; --ok:#25d366; --danger:#ff4d4d;
+  --strong:#ffffff; --text2:#dddddd; --topbg:rgba(13,13,13,.88); --sw:#444;
+  --glow1:rgba(255,90,31,.20); --glow2:rgba(255,90,31,.14); --glow3:rgba(255,90,31,.10); --noise:.06;
+  color-scheme:dark;
   --r:16px; --shadow:0 12px 40px rgba(0,0,0,.55);
   --fd:'Bebas Neue',Impact,'Arial Narrow',sans-serif;
   --fb:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+:root[data-theme="light"]{
+  --bg:#f7f2ec; --panel:#ffffff; --panel2:#f3ece4; --line:#e6dbcf;
+  --orange:#f04e14; --orange2:#e2550f; --yellow:#ffc531;
+  --text:#1c1814; --muted:#6e655c; --danger:#d93636;
+  --strong:#1c1814; --text2:#3d362f; --topbg:rgba(247,242,236,.9); --sw:#cfc6bc;
+  --shadow:0 12px 34px rgba(60,35,15,.16);
+  --glow1:rgba(255,90,31,.12); --glow2:rgba(255,90,31,.08); --glow3:rgba(255,90,31,.06); --noise:.035;
+  color-scheme:light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:120px}
 body{
   font-family:var(--fb);color:var(--text);background:var(--bg);line-height:1.45;min-height:100vh;
   background-image:
-    radial-gradient(circle at 8% 4%,rgba(255,90,31,.20) 0,transparent 22%),
-    radial-gradient(circle at 96% 30%,rgba(255,90,31,.14) 0,transparent 18%),
-    radial-gradient(circle at 4% 75%,rgba(255,90,31,.10) 0,transparent 20%),
+    radial-gradient(circle at 8% 4%,var(--glow1) 0,transparent 22%),
+    radial-gradient(circle at 96% 30%,var(--glow2) 0,transparent 18%),
+    radial-gradient(circle at 4% 75%,var(--glow3) 0,transparent 20%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");
   padding-bottom:96px;
 }
@@ -38,7 +57,7 @@ a{color:var(--orange2)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ---------- header ---------- */
-.top{position:sticky;top:0;z-index:40;background:rgba(13,13,13,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:40;background:var(--topbg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:12px;height:64px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);min-width:0}
 .brand img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--orange)}
@@ -91,6 +110,10 @@ section{padding:34px 0 8px}
 
 .price{font-family:var(--fd);font-size:44px;line-height:1;color:#fff;letter-spacing:1px;
   text-shadow:2px 2px 0 #000,-1px -1px 0 #000;-webkit-text-stroke:1px var(--yellow);paint-order:stroke fill}
+:root[data-theme="light"] .price{color:var(--strong);text-shadow:2px 2px 0 var(--yellow);-webkit-text-stroke:0}
+:root[data-theme="light"] .promo .ph .price{color:#fff;text-shadow:2px 2px 0 #000,-1px -1px 0 #000;-webkit-text-stroke:1px var(--yellow)}
+.themebtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:18px;flex:none}
+.themebtn:hover{border-color:var(--orange)}
 
 /* 2x1 sizes */
 .sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -98,21 +121,23 @@ section{padding:34px 0 8px}
 .size:hover{border-color:var(--orange);transform:translateY(-3px)}
 .size .tag{display:inline-block;background:var(--orange);color:#fff;font-family:var(--fd);font-size:28px;padding:2px 16px;border-radius:10px;letter-spacing:1px}
 .size .cm{font-family:var(--fd);font-size:26px;color:var(--orange);margin-top:6px}
-.size .cm small{display:block;font-family:var(--fb);font-size:10px;font-weight:700;color:#ddd;margin-top:-4px;letter-spacing:.5px}
+.size .cm small{display:block;font-family:var(--fb);font-size:10px;font-weight:700;color:var(--text2);margin-top:-4px;letter-spacing:.5px}
 .size .pz{height:120px;display:grid;place-items:center;margin:8px 0}
 .size .pz img{border-radius:50%;object-fit:cover;aspect-ratio:1;width:auto;max-width:100%;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6))}
 .size .meta{font-size:12px;color:var(--muted);margin:6px 0 10px}
 .size .btn{width:100%}
+.sbtns{display:grid;gap:8px}
+.sbtns .btn-l{font-size:13px;padding:10px 8px}
 .notice{margin:20px auto 0;text-align:center;font-family:var(--fd);font-size:clamp(22px,3.6vw,34px);line-height:1.1;letter-spacing:.5px;color:var(--orange)}
-.notice b{color:#fff;font-weight:400}
+.notice b{color:var(--strong);font-weight:400}
 .notice span{display:inline-block;background:var(--orange);color:#fff;padding:2px 18px;border-radius:10px;margin-top:6px}
 
 .orilla{margin-top:22px;display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:center;background:var(--panel);border:2px solid var(--orange);border-radius:var(--r);padding:18px;overflow:hidden}
 .orilla h3{font-family:var(--fd);font-size:clamp(30px,5vw,44px);line-height:.95;color:var(--orange);font-style:italic}
-.orilla h3 small{display:block;color:#fff;font-size:.75em}
+.orilla h3 small{display:block;color:var(--strong);font-size:.75em}
 .orilla .sub{color:var(--orange2);font-family:var(--fd);font-size:20px;font-style:italic}
 .orilla .ex{display:flex;gap:0;margin-top:12px;flex-wrap:wrap}
-.orilla .ex div{padding:0 14px;border-left:2px solid #fff;text-align:center}
+.orilla .ex div{padding:0 14px;border-left:2px solid var(--line);text-align:center}
 .orilla .ex div:first-child{border:0;padding-left:0}
 .orilla .ex b{display:block;font-family:var(--fd);font-size:22px;color:var(--orange)}
 .orilla img{border-radius:12px;width:100%;height:100%;object-fit:cover;max-height:230px}
@@ -127,9 +152,9 @@ section{padding:34px 0 8px}
 .promo .ph .price{position:absolute;right:14px;bottom:8px}
 .promo .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
 .promo h3{font-family:var(--fd);font-size:40px;line-height:.9}
-.promo h3 small{display:block;font-size:24px;color:#fff;opacity:.9}
+.promo h3 small{display:block;font-size:24px;color:var(--strong);opacity:.9}
 .promo h3 span{color:var(--orange)}
-.promo ul{list-style:none;color:#ddd;font-size:14px}
+.promo ul{list-style:none;color:var(--text2);font-size:14px}
 .promo li::before{content:"•";color:var(--orange);font-weight:800;margin-right:8px}
 .promo .note{font-size:12px;color:var(--muted)}
 .promo .btn{margin-top:auto}
@@ -139,13 +164,13 @@ section{padding:34px 0 8px}
 .espc{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;transition:border-color .2s,background .2s;position:relative}
 .espc:hover{border-color:var(--orange);background:var(--panel2)}
 .espc h3{font-family:var(--fd);font-size:30px;color:var(--orange);line-height:1;letter-spacing:.5px}
-.espc p{font-size:14px;color:#ddd;margin-top:4px}
+.espc p{font-size:14px;color:var(--text2);margin-top:4px}
 .espc .add{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:800;opacity:.85}
 
 /* refrescos */
 .refr{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;background:var(--panel);border:2px solid var(--orange);border-radius:var(--r);padding:18px}
 .refr h3{font-family:var(--fd);font-size:44px;color:var(--orange);line-height:.9}
-.refr h3 small{font-size:22px;color:#fff;margin-left:6px}
+.refr h3 small{font-size:22px;color:var(--strong);margin-left:6px}
 .flavors{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .flavor{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600}
 .flavor button{width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:18px;line-height:1}
@@ -176,7 +201,7 @@ footer button{color:var(--muted);text-decoration:underline;font-size:13px}
 .mimg{margin:-16px -18px 14px;aspect-ratio:21/9;overflow:hidden}
 .mimg img{width:100%;height:100%;object-fit:cover}
 
-.lbl{display:block;font-size:13px;font-weight:700;color:#ddd;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.lbl{display:block;font-size:13px;font-weight:700;color:var(--text2);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.5px}
 .lbl:first-child{margin-top:0}
 .lbl em{font-style:normal;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
 .inp{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;transition:border-color .2s}
@@ -196,7 +221,7 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
 .slot small{display:block;font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:600}
 .tg{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:14px}
 .tg input{display:none}
-.tg .sw{width:44px;height:24px;border-radius:999px;background:#444;position:relative;transition:background .2s;flex:none}
+.tg .sw{width:44px;height:24px;border-radius:999px;background:var(--sw);position:relative;transition:background .2s;flex:none}
 .tg .sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
 .tg input:checked+.sw{background:var(--orange)}
 .tg input:checked+.sw::after{transform:translateX(20px)}
@@ -213,7 +238,7 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
 .ci:last-child{border:0}
 .ci .tx{flex:1;min-width:0}
 .ci b{display:block}
-.ci ul{list-style:none;font-size:13px;color:#cfcfcf;margin-top:2px}
+.ci ul{list-style:none;font-size:13px;color:var(--text2);margin-top:2px}
 .ci li{padding-left:12px;position:relative}
 .ci li::before{content:"›";position:absolute;left:0;color:var(--orange)}
 .ci .rt{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
@@ -226,7 +251,7 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hint{font-size:12px;color:var(--muted);margin-top:6px}
 .ok-ico{width:84px;height:84px;border-radius:50%;background:var(--ok);display:grid;place-items:center;margin:6px auto 14px;font-size:42px;color:#06200f}
-pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--fb);font-size:13px;max-height:260px;overflow:auto;color:#ddd}
+pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--fb);font-size:13px;max-height:260px;overflow:auto;color:var(--text2)}
 
 /* toast */
 .toasts{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:calc(100% - 32px);max-width:420px}
@@ -293,6 +318,7 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
       <div><b id="hName">Oliver Pizzas</b><small id="hSlogan">Sabor y calidad</small></div>
     </a>
     <div class="sp"></div>
+    <button class="themebtn" id="themeBtn" aria-label="Cambiar tema claro u oscuro" title="Tema claro / oscuro">☀️</button>
     <button class="cartbtn" id="cartBtn" aria-label="Ver pedido">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
       <span class="lb">Mi pedido</span><span class="badge" id="cartCount">0</span>
@@ -300,7 +326,7 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
   </div>
   <nav class="nav" id="nav">
     <a href="#dosxuno">🍕 Pizzas 2x1</a>
-    <a href="#paquetes">🔥 Paquetes</a>
+    <a href="#paquetes">🎁 1 Pizza + refresco</a>
     <a href="#especialidades">⭐ Especialidades</a>
     <a href="#refrescos">🥤 Refrescos</a>
   </nav>
@@ -309,7 +335,7 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
 <main class="wrap" id="inicio">
   <div class="hero">
     <div>
-      <h1><span id="heroName1">Oliver</span><span id="heroName2" style="color:#fff">Pizzas</span></h1>
+      <h1><span id="heroName1">Oliver</span><span id="heroName2" style="color:var(--strong)">Pizzas</span></h1>
       <p class="slogan" id="heroSlogan">Sabor y calidad</p>
       <div class="chips">
         <div class="chip">🛵 Entrega <b id="heroTime">45 a 55 min</b></div>
@@ -330,7 +356,7 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
   <section id="dosxuno">
     <div class="sh">
       <div><h2>Pizzas <em>2x1</em></h2><span class="underline"></span></div>
-      <p>¡El doble de sabor! Elige el tamaño, te llevas <b>2 pizzas</b> por el precio de una.</p>
+      <p id="pizzasIntro">¡El doble de sabor! Elige el tamaño, te llevas <b>2 pizzas</b> por el precio de una.</p>
     </div>
     <div class="sizes" id="sizes"></div>
     <p class="notice" id="notice2x1"></p>
@@ -339,8 +365,8 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
 
   <section id="paquetes">
     <div class="sh">
-      <div><h2>Paquetes <em>con refresco</em></h2><span class="underline"></span></div>
-      <p>Pizzas grandes para compartir. ¡Todas incluyen un refresco de 2 litros gratis!</p>
+      <div><h2>1 Pizza <em>+ refresco gratis</em></h2><span class="underline"></span></div>
+      <p>¿No quieres 2x1? Pide una sola pizza. ¡Todas incluyen un refresco de 2 litros gratis!</p>
     </div>
     <div class="promos" id="promos"></div>
   </section>
@@ -389,6 +415,7 @@ const DEFAULTS = {
     pagos: ["Efectivo", "Transferencia", "Tarjeta (terminal a domicilio)"],
     recogerEnSucursal: true,
     abierto: true,
+    tema: "auto",
     mensajeCerrado: "Por el momento estamos cerrados. ¡Vuelve pronto!"
   },
   textos: {
@@ -396,10 +423,10 @@ const DEFAULTS = {
     aviso2x1Destacado: "Sin ningún costo extra"
   },
   tamanos: [
-    { id: "chica",    nombre: "Chica",    cm: 24, precio: 170, orilla: 15, maxEsp: 1, activo: true },
-    { id: "mediana",  nombre: "Mediana",  cm: 30, precio: 250, orilla: 20, maxEsp: 2, activo: true },
-    { id: "grande",   nombre: "Grande",   cm: 35, precio: 300, orilla: 30, maxEsp: 2, activo: true },
-    { id: "familiar", nombre: "Familiar", cm: 40, precio: 410, orilla: 40, maxEsp: 2, activo: true }
+    { id: "chica",    nombre: "Chica",    cm: 24, precio: 170, precioUna: 0, orilla: 15, maxEsp: 1, activo: true },
+    { id: "mediana",  nombre: "Mediana",  cm: 30, precio: 250, precioUna: 0, orilla: 20, maxEsp: 2, activo: true },
+    { id: "grande",   nombre: "Grande",   cm: 35, precio: 300, precioUna: 0, orilla: 30, maxEsp: 2, activo: true },
+    { id: "familiar", nombre: "Familiar", cm: 40, precio: 410, precioUna: 0, orilla: 40, maxEsp: 2, activo: true }
   ],
   orilla: {
     titulo: "Orilla rellena",
@@ -408,10 +435,10 @@ const DEFAULTS = {
     img: "img/orilla.jpg"
   },
   promos: [
-    { id: "mega",     nombre: "Mega",     precio: 380, especialidades: 4, rebanadas: 24, refresco: true, orilla: 0, img: "img/mega.jpg",     nota: "Pizza rectangular. Con o sin orilla rellena de queso.", activo: true },
-    { id: "cuadrada", nombre: "Cuadrada", precio: 320, especialidades: 2, rebanadas: 16, refresco: true, orilla: 0, img: "img/cuadrada.jpg", nota: "Con o sin orilla rellena de queso.", activo: true },
-    { id: "familiar", nombre: "Familiar", precio: 270, especialidades: 2, rebanadas: 10, refresco: true, orilla: 0, img: "img/familiar.jpg", nota: "Con o sin orilla rellena de queso.", activo: true },
-    { id: "grande",   nombre: "Grande",   precio: 225, especialidades: 2, rebanadas: 8,  refresco: true, orilla: 0, img: "img/grande.jpg",   nota: "Con o sin orilla rellena de queso.", activo: true }
+    { id: "mega",     tamano: "",         nombre: "Mega",     precio: 380, especialidades: 4, rebanadas: 24, refresco: true, orilla: 0, img: "img/mega.jpg",     nota: "Pizza rectangular. Con o sin orilla rellena de queso.", activo: true },
+    { id: "cuadrada", tamano: "",         nombre: "Cuadrada", precio: 320, especialidades: 2, rebanadas: 16, refresco: true, orilla: 0, img: "img/cuadrada.jpg", nota: "Con o sin orilla rellena de queso.", activo: true },
+    { id: "familiar", tamano: "familiar", nombre: "Familiar", precio: 270, especialidades: 2, rebanadas: 10, refresco: true, orilla: 0, img: "img/familiar.jpg", nota: "Con o sin orilla rellena de queso.", activo: true },
+    { id: "grande",   tamano: "grande",   nombre: "Grande",   precio: 225, especialidades: 2, rebanadas: 8,  refresco: true, orilla: 0, img: "img/grande.jpg",   nota: "Con o sin orilla rellena de queso.", activo: true }
   ],
   especialidades: [
     { id: "hawaiana",   nombre: "Hawaiana",          ingredientes: "Jamón y piña.", activo: true },
@@ -481,7 +508,16 @@ function merge(base, over) {
    1) Cambios guardados en este navegador (panel admin)
    2) menu.json publicado junto a esta página (opcional)
    3) Valores predeterminados del menú impreso            */
+function migrate(cfg) {
+  // configuraciones guardadas antes de existir "tamano": liga por id (grande, familiar…)
+  const ids = new Set((cfg.tamanos || []).map(t => t.id));
+  (cfg.promos || []).forEach(p => { if (p.tamano === undefined) p.tamano = ids.has(p.id) ? p.id : ""; });
+  return cfg;
+}
 async function loadConfig() {
+  return migrate(await loadConfigRaw());
+}
+async function loadConfigRaw() {
   const local = lsGet(LS.cfg);
   if (local) return merge(DEFAULTS, local);
   try {
@@ -492,6 +528,21 @@ async function loadConfig() {
 }
 function saveConfig() {
   if (!lsSet(LS.cfg, CFG)) toast("No se pudo guardar: espacio lleno (usa imágenes más ligeras)", true);
+}
+
+/* ---------- tema claro / oscuro ---------- */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  $("#themeBtn").textContent = t === "light" ? "🌙" : "☀️";
+  $("#themeBtn").title = t === "light" ? "Cambiar a tema oscuro" : "Cambiar a tema claro";
+  document.querySelector('meta[name="theme-color"]').content = t === "light" ? "#f7f2ec" : "#0d0d0d";
+}
+function initialTheme() {
+  let t = null;
+  try { t = localStorage.getItem("oliver_tema"); } catch {}
+  if (t === "light" || t === "dark") return t;                                              // elección del visitante
+  if (CFG.negocio.tema === "light" || CFG.negocio.tema === "dark") return CFG.negocio.tema; // definido por el negocio
+  return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
 }
 
 /* ---------- render principal ---------- */
@@ -518,6 +569,14 @@ function renderAll() {
   renderSizes(); renderPromos(); renderEsp(); renderRefrescos(); renderCartUI();
 }
 
+/* Botón "Solo 1 pizza" de un tamaño: usa la pizza individual ligada (incluye refresco)
+   o, si no hay, el "Precio 1 pizza" propio del tamaño. */
+function unaDe(s) {
+  const pr = active(CFG.promos).find(p => p.tamano === s.id);
+  if (pr) return `<button class="btn btn-l" data-promo="${esc(pr.id)}">Solo 1 pizza · ${money(pr.precio)}${pr.refresco ? " + refresco 🎁" : ""}</button>`;
+  if (precioUna(s)) return `<button class="btn btn-l" data-size="${esc(s.id)}" data-modo="una">Solo 1 pizza · ${money(precioUna(s))}</button>`;
+  return "";
+}
 function renderSizes() {
   const list = active(CFG.tamanos);
   const maxCm = Math.max(...list.map(s => s.cm), 1);
@@ -527,9 +586,14 @@ function renderSizes() {
       <div class="cm">${esc(s.cm)} cm<small>DE DIÁMETRO</small></div>
       <div class="pz"><img src="${pic("img/pepperoni.jpg")}" alt="" style="height:${Math.round(66 + 50 * s.cm / maxCm)}px"></div>
       <div class="price">${money(s.precio)}</div>
-      <div class="meta">2 pizzas · ${s.maxEsp > 1 ? "hasta " + s.maxEsp + " especialidades c/u" : "1 especialidad c/u"}</div>
-      <button class="btn btn-o" data-size="${esc(s.id)}">Pedir 2x1</button>
+      <div class="meta">Promo 2x1 · 2 pizzas · ${s.maxEsp > 1 ? "hasta " + s.maxEsp + " especialidades c/u" : "1 especialidad c/u"}</div>
+      <div class="sbtns">
+        <button class="btn btn-o" data-size="${esc(s.id)}" data-modo="2x1">Pedir 2x1</button>
+        ${unaDe(s)}
+      </div>
     </div>`).join("");
+  $("#pizzasIntro").innerHTML = "¡El doble de sabor! Elige el tamaño y te llevas <b>2 pizzas</b> por el precio de una." +
+    (list.some(s => unaDe(s)) ? " ¿Solo quieres una? Toca <b>Solo 1 pizza</b>." : "");
   $("#notice2x1").innerHTML = CFG.textos.aviso2x1 ? `${rich(CFG.textos.aviso2x1)}${CFG.textos.aviso2x1Destacado ? `<br><span>${rich(CFG.textos.aviso2x1Destacado)}</span>` : ""}` : "";
   const o = CFG.orilla;
   $("#orillaBox").innerHTML = `
@@ -558,7 +622,7 @@ function renderPromos() {
           ${p.rebanadas ? `<li>${p.rebanadas} rebanadas</li>` : ""}
         </ul>
         ${p.nota ? `<p class="note">${esc(p.nota)}</p>` : ""}
-        <button class="btn btn-o" data-promo="${esc(p.id)}">Armar mi pizza ${esc(p.nombre)}</button>
+        <button class="btn btn-o" data-promo="${esc(p.id)}">Pedir pizza ${esc(p.nombre)}</button>
       </div>
     </article>`).join("");
 }
@@ -667,20 +731,38 @@ const pizzaIco = `<svg class="pzico" viewBox="0 0 32 32"><circle cx="16" cy="16"
 const qtyHTML = q => `<div class="qty"><button data-q="-1" aria-label="Menos">−</button><span data-qv>${q}</span><button data-q="1" aria-label="Más">+</button></div>`;
 
 /* ---------- modal: pizzas 2x1 ---------- */
-function open2x1(sizeId, preEsp) {
-  const sizes = active(CFG.tamanos);
-  if (!sizes.length) return;
-  let size = sizes.find(s => s.id === sizeId) || sizes.find(s => s.maxEsp > 1) || sizes[0];
+/* ---------- modal: pizzas (promo 2x1 o una sola pizza) ---------- */
+const precioUna = s => +s.precioUna || 0;
+function open2x1(sizeId, preEsp, modoIni) {
+  const all = active(CFG.tamanos);
+  if (!all.length) return;
+  const hayUna = all.some(s => precioUna(s) > 0);
+  let modo = modoIni === "una" && hayUna ? "una" : "2x1";
+  const sizesFor = m => m === "una" ? all.filter(s => precioUna(s) > 0) : all;
+  const pick = (id, m) => { const l = sizesFor(m); return l.find(s => s.id === id) || l.find(s => s.maxEsp > 1) || l[0]; };
+  let size = pick(sizeId, modo);
   const st = { pizzas: [{ esp: [preEsp || ""], orilla: false }, { esp: [""], orilla: false }], qty: 1, notas: "" };
+  const nPizzas = () => modo === "una" ? 1 : 2;
+  const activas = () => st.pizzas.slice(0, nPizzas());
+  const precioBase = sz => modo === "una" ? precioUna(sz) : sz.precio;
+  const calc = () => (precioBase(size) + activas().filter(p => p.orilla).length * size.orilla) * st.qty;
 
-  const calc = () => (size.precio + st.pizzas.filter(p => p.orilla).length * size.orilla) * st.qty;
   const body = () => `
+    ${hayUna ? `
+      <label class="lbl">¿Qué quieres pedir?</label>
+      <div class="seg" id="segModo">
+        <button data-m="2x1" class="${modo === "2x1" ? "on" : ""}">🍕🍕 Promo 2x1<small>2 pizzas por el precio de 1</small></button>
+        <button data-m="una" class="${modo === "una" ? "on" : ""}">🍕 Solo 1 pizza<small>sin promoción</small></button>
+      </div>` : ""}
     <label class="lbl">Tamaño</label>
-    <div class="seg" id="segSize">${sizes.map(s => `<button data-s="${esc(s.id)}" class="${s.id === size.id ? "on" : ""}">${esc(s.nombre)}<small>${s.cm} cm · ${money(s.precio)}</small></button>`).join("")}</div>
-    <p class="hint">${size.maxEsp > 1 ? `Puedes elegir hasta <b>${size.maxEsp} especialidades en cada pizza</b> sin costo extra.` : "En tamaño chica se elige 1 especialidad por pizza."}</p>
-    ${st.pizzas.map((p, pi) => `
+    <div class="seg" id="segSize">${sizesFor(modo).map(s => `<button data-s="${esc(s.id)}" class="${s.id === size.id ? "on" : ""}">${esc(s.nombre)}<small>${s.cm} cm · ${money(precioBase(s))}</small></button>`).join("")}</div>
+    <p class="hint">${size.maxEsp > 1
+      ? `Puedes elegir hasta <b>${size.maxEsp} especialidades ${modo === "una" ? "en tu pizza" : "en cada pizza"}</b> sin costo extra.`
+      : `En tamaño ${esc(size.nombre.toLowerCase())} se elige 1 especialidad por pizza.`}
+      ${modo === "una" && size.precio ? `<br>💡 Por ${money(size.precio - precioUna(size))} más te llevas <b>2 pizzas</b> con la promo 2x1.` : ""}</p>
+    ${activas().map((p, pi) => `
       <div class="pbox">
-        <h4>${pizzaIco} Pizza ${pi + 1}</h4>
+        <h4>${pizzaIco} ${modo === "una" ? "Tu pizza" : "Pizza " + (pi + 1)}</h4>
         ${slotsHTML("p" + pi, size.maxEsp, p.esp)}
         <label class="tg"><span>🧀 Orilla rellena de queso Philadelphia <b style="color:var(--orange)">+${money(size.orilla)}</b></span><input type="checkbox" data-orilla="${pi}" ${p.orilla ? "checked" : ""}><span class="sw"></span></label>
       </div>`).join("")}
@@ -688,20 +770,23 @@ function open2x1(sizeId, preEsp) {
     <textarea class="inp" id="mNotas" placeholder="Ej. sin cebolla, bien dorada…">${esc(st.notas)}</textarea>`;
 
   openModal({
-    title: "Pizzas 2x1", sub: "Te llevas 2 pizzas del mismo tamaño",
+    title: "Pizzas", sub: hayUna ? "Promoción 2x1 o una sola pizza" : "Te llevas 2 pizzas del mismo tamaño",
     body: `<div id="mBody">${body()}</div>`,
     foot: `${qtyHTML(1)}<button class="btn btn-o" id="mAdd">Agregar · <span id="mTot">${money(calc())}</span></button>`,
     onMount(ov, m) {
-      const refresh = () => { $("#mBody", ov).innerHTML = body(); $("#mTot", ov).textContent = money(calc()); };
+      const tot = () => $("#mTot", ov).textContent = money(calc());
+      const refresh = () => { $("#mBody", ov).innerHTML = body(); tot(); };
       ov.addEventListener("click", e => {
+        const mb = e.target.closest("[data-m]");
+        if (mb && mb.dataset.m !== modo) { modo = mb.dataset.m; size = pick(size.id, modo); st.pizzas.forEach(p => { p.esp = p.esp.slice(0, size.maxEsp); }); refresh(); }
         const s = e.target.closest("[data-s]");
         if (s) {
-          size = sizes.find(x => x.id === s.dataset.s);
+          size = sizesFor(modo).find(x => x.id === s.dataset.s);
           st.pizzas.forEach(p => { p.esp = p.esp.slice(0, size.maxEsp); });
           refresh();
         }
         const q = e.target.closest("[data-q]");
-        if (q) { st.qty = Math.max(1, st.qty + +q.dataset.q); $("[data-qv]", ov).textContent = st.qty; $("#mTot", ov).textContent = money(calc()); }
+        if (q) { st.qty = Math.max(1, st.qty + +q.dataset.q); $("[data-qv]", ov).textContent = st.qty; tot(); }
       });
       ov.addEventListener("change", e => {
         const t = e.target;
@@ -711,16 +796,20 @@ function open2x1(sizeId, preEsp) {
           t.classList.remove("err");
           $(`[data-ings="${t.dataset.slot}-${t.dataset.i}"]`, ov).textContent = espById(t.value)?.ingredientes || "";
         }
-        if (t.dataset.orilla !== undefined) { st.pizzas[+t.dataset.orilla].orilla = t.checked; $("#mTot", ov).textContent = money(calc()); }
+        if (t.dataset.orilla !== undefined) { st.pizzas[+t.dataset.orilla].orilla = t.checked; tot(); }
       });
       ov.addEventListener("input", e => { if (e.target.id === "mNotas") st.notas = e.target.value; });
       $("#mAdd", ov).onclick = () => {
         let ok = true;
-        st.pizzas.forEach((p, pi) => { if (!p.esp[0]) { ok = false; $(`[data-slot="p${pi}"][data-i="0"]`, ov)?.classList.add("err"); } });
-        if (!ok) return toast("Elige la especialidad de cada pizza", true);
-        const lineas = st.pizzas.map((p, pi) => `Pizza ${pi + 1}: ${espNames(p.esp).join(" / ")}${p.orilla ? ` + orilla rellena (+${money(size.orilla)})` : ""}`);
+        activas().forEach((p, pi) => { if (!p.esp[0]) { ok = false; $(`[data-slot="p${pi}"][data-i="0"]`, ov)?.classList.add("err"); } });
+        if (!ok) return toast(modo === "una" ? "Elige la especialidad de tu pizza" : "Elige la especialidad de cada pizza", true);
+        const orillaTxt = p => p.orilla ? ` + orilla rellena (+${money(size.orilla)})` : "";
+        const lineas = modo === "una"
+          ? [`Especialidad: ${espNames(st.pizzas[0].esp).join(" / ")}${orillaTxt(st.pizzas[0])}`]
+          : activas().map((p, pi) => `Pizza ${pi + 1}: ${espNames(p.esp).join(" / ")}${orillaTxt(p)}`);
         if (st.notas.trim()) lineas.push("Nota: " + st.notas.trim());
-        addToCart({ tipo: "2x1", titulo: `Pizzas 2x1 ${size.nombre} (${size.cm} cm)`, lineas, precio: calc() / st.qty, qty: st.qty });
+        const titulo = modo === "una" ? `Pizza ${size.nombre} (${size.cm} cm)` : `Pizzas 2x1 ${size.nombre} (${size.cm} cm)`;
+        addToCart({ tipo: modo, titulo, lineas, precio: calc() / st.qty, qty: st.qty });
         closeModal(m);
       };
     }
@@ -1019,12 +1108,16 @@ function openAdmin() {
         ${F("Abierto (recibiendo pedidos)", "negocio.abierto", "check")}
         ${F("Permitir “paso por él” (recoger)", "negocio.recogerEnSucursal", "check")}
         ${F("Mensaje cuando está cerrado", "negocio.mensajeCerrado", "text", "full")}
+        <div class="f"><small>Tema predeterminado</small><select class="inp" data-p="negocio.tema">
+          ${[["auto", "Automático (según el celular)"], ["dark", "Oscuro"], ["light", "Claro"]].map(([v, t]) => `<option value="${v}" ${draft.negocio.tema === v ? "selected" : ""}>${t}</option>`).join("")}
+        </select></div>
       </div></div>`],
-    tamanos: ["🍕 Pizzas 2x1", () => `
-      <div class="ahelp">Precio por el paquete 2x1 (2 pizzas). “Orilla” es el costo extra <b>por pizza</b>. “Máx. especialidades” por pizza (1 = una sola, 2 = mitad y mitad).</div>
+    tamanos: ["🍕 Pizzas", () => `
+      <div class="ahelp">“Precio 2x1” es por las 2 pizzas. “Precio 1 pizza” es solo para tamaños sin pizza individual ligada (déjalo en 0 si no se vende sola). “Orilla” es el costo extra <b>por pizza</b>. “Máx. especialidades” por pizza (1 = una sola, 2 = mitad y mitad).</div>
       ${draft.tamanos.map((s, i) => `<div class="acard ${s.activo === false ? "off" : ""}">${listHead("tamanos", i, s.nombre, draft.tamanos.length)}<div class="agrid">
         ${F("Nombre", `tamanos.${i}.nombre`)}${F("Diámetro (cm)", `tamanos.${i}.cm`, "number")}
-        ${F("Precio 2x1", `tamanos.${i}.precio`, "number")}${F("Orilla rellena (+)", `tamanos.${i}.orilla`, "number")}
+        ${F("Precio 2x1", `tamanos.${i}.precio`, "number")}${F("Precio 1 pizza", `tamanos.${i}.precioUna`, "number")}
+        ${F("Orilla rellena (+)", `tamanos.${i}.orilla`, "number")}
         ${F("Máx. especialidades", `tamanos.${i}.maxEsp`, "number")}${F("Visible", `tamanos.${i}.activo`, "check")}
       </div></div>`).join("")}
       <button class="btn btn-l" data-act="add" data-list="tamanos">+ Agregar tamaño</button>
@@ -1034,17 +1127,17 @@ function openAdmin() {
         ${F("Orilla: título", "orilla.titulo")}${F("Orilla: subtítulo", "orilla.subtitulo")}${F("Orilla: detalle", "orilla.detalle")}
         ${IMG("Imagen de orilla rellena", "orilla.img")}
       </div></div>`],
-    promos: ["🔥 Paquetes", () => `
-      <div class="ahelp">Paquetes con precio fijo. “Orilla (+)” en 0 significa que la orilla rellena es opcional sin costo.</div>
+    promos: ["🎁 1 Pizza + refresco", () => `
+      <div class="ahelp">Pizzas individuales con precio fijo. “Tamaño 2x1 ligado” (chica, mediana, grande, familiar) muestra el botón “Solo 1 pizza” en esa tarjeta de tamaño. “Orilla (+)” en 0 = orilla opcional sin costo.</div>
       ${draft.promos.map((p, i) => `<div class="acard ${p.activo === false ? "off" : ""}">${listHead("promos", i, "Pizza " + p.nombre, draft.promos.length)}<div class="agrid">
         ${F("Nombre", `promos.${i}.nombre`)}${F("Precio", `promos.${i}.precio`, "number")}
         ${F("Especialidades a elegir", `promos.${i}.especialidades`, "number")}${F("Rebanadas", `promos.${i}.rebanadas`, "number")}
-        ${F("Orilla rellena (+)", `promos.${i}.orilla`, "number")}
+        ${F("Orilla rellena (+)", `promos.${i}.orilla`, "number")}${F("Tamaño 2x1 ligado (id)", `promos.${i}.tamano`)}
         ${F("Incluye refresco gratis", `promos.${i}.refresco`, "check")}${F("Visible", `promos.${i}.activo`, "check")}
         ${F("Nota", `promos.${i}.nota`, "text", "full")}
         ${IMG("Imagen", `promos.${i}.img`)}
       </div></div>`).join("")}
-      <button class="btn btn-l" data-act="add" data-list="promos">+ Agregar paquete</button>`],
+      <button class="btn btn-l" data-act="add" data-list="promos">+ Agregar pizza individual</button>`],
     especialidades: ["⭐ Especialidades", () => `
       <div class="ahelp">Desmarca “Visible” para ocultar una especialidad temporalmente (por ejemplo si se acabó un ingrediente).</div>
       ${draft.especialidades.map((e, i) => `<div class="acard ${e.activo === false ? "off" : ""}">${listHead("especialidades", i, e.nombre, draft.especialidades.length)}<div class="agrid">
@@ -1114,7 +1207,7 @@ function openAdmin() {
           try {
             const data = JSON.parse(await t.files[0].text());
             if (!data || typeof data !== "object" || !Array.isArray(data.especialidades)) throw 0;
-            draft = merge(DEFAULTS, data); markDirty(); toast("Archivo cargado. Presiona Guardar cambios.");
+            draft = migrate(merge(DEFAULTS, data)); markDirty(); toast("Archivo cargado. Presiona Guardar cambios.");
           } catch { toast("Archivo no válido", true); }
         }
       });
@@ -1129,8 +1222,8 @@ function openAdmin() {
             const id = "x" + Date.now().toString(36);
             const tpl = {
               especialidades: { id, nombre: "Nueva especialidad", ingredientes: "", activo: true },
-              tamanos: { id, nombre: "Nuevo tamaño", cm: 30, precio: 0, orilla: 0, maxEsp: 2, activo: true },
-              promos: { id, nombre: "Nuevo paquete", precio: 0, especialidades: 2, rebanadas: 8, refresco: true, orilla: 0, img: "img/grande.jpg", nota: "", activo: true }
+              tamanos: { id, nombre: "Nuevo tamaño", cm: 30, precio: 0, precioUna: 0, orilla: 0, maxEsp: 2, activo: true },
+              promos: { id, tamano: "", nombre: "Nueva pizza", precio: 0, especialidades: 2, rebanadas: 8, refresco: true, orilla: 0, img: "img/grande.jpg", nota: "", activo: true }
             }[a.dataset.list];
             list.push(tpl);
             setTimeout(() => mb.scrollTo({ top: mb.scrollHeight, behavior: "smooth" }), 30);
@@ -1149,7 +1242,7 @@ function openAdmin() {
         draft.negocio.whatsapp = String(draft.negocio.whatsapp).replace(/\D/g, "");
         draft.tamanos.forEach(s => s.maxEsp = Math.max(1, Math.min(4, Math.round(+s.maxEsp || 1))));
         draft.promos.forEach(p => p.especialidades = Math.max(1, Math.min(8, Math.round(+p.especialidades || 1))));
-        CFG = clone(draft); saveConfig(); renderAll();
+        CFG = clone(draft); saveConfig(); renderAll(); applyTheme(initialTheme());
         dirty = false; $("#aDirty", ov).textContent = "";
         toast("💾 Cambios guardados");
       };
@@ -1186,12 +1279,17 @@ function download(name, text) {
 /* ---------- eventos globales ---------- */
 document.addEventListener("click", e => {
   if (e.target.closest(".ov")) return;
-  const s = e.target.closest("[data-size]"); if (s) return open2x1(s.dataset.size);
+  const s = e.target.closest("[data-size]"); if (s) return open2x1(s.dataset.size, null, s.dataset.modo);
   const p = e.target.closest("[data-promo]"); if (p) return openPromo(p.dataset.promo);
   const es = e.target.closest("[data-esp]"); if (es) return open2x1(null, es.dataset.esp);
   const r = e.target.closest("[data-refresco]"); if (r) return addRefresco(+r.dataset.refresco);
 });
 $("#cartBtn").onclick = openCart;
+$("#themeBtn").onclick = () => {
+  const t = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  try { localStorage.setItem("oliver_tema", t); } catch {}
+  applyTheme(t);
+};
 $("#fbar").onclick = openCart;
 $("#adminLink").onclick = openAdminLogin;
 window.addEventListener("hashchange", () => { if (location.hash === "#admin") openAdminLogin(); });
@@ -1204,6 +1302,7 @@ const io = new IntersectionObserver(es => es.forEach(en => {
 (async function init() {
   CFG = await loadConfig();
   cart = (lsGet(LS.cart) || []).filter(i => i && i.uid && i.qty > 0);
+  applyTheme(initialTheme());
   renderAll();
   $$("main section").forEach(s => io.observe(s));
   if (location.hash === "#admin") openAdminLogin();
