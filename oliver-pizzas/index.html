@@ -441,6 +441,10 @@ const DEFAULTS = {
   admin: { pin: "1234" }
 };
 
+/* Imágenes incrustadas (solo en la versión de un archivo). Vacío = usa la carpeta img/. */
+const IMG = {};
+const pic = p => IMG[p] || p;
+
 const LS = { cfg: "oliver_cfg_v1", cart: "oliver_cart_v1", cliente: "oliver_cliente_v1", folio: "oliver_folio_v1" };
 let CFG, cart = [];
 
@@ -494,7 +498,7 @@ function saveConfig() {
 function renderAll() {
   const n = CFG.negocio;
   document.title = n.nombre + " · Menú y pedidos";
-  $("#hLogo").src = $("#heroLogo").src = n.logo;
+  $("#hLogo").src = $("#heroLogo").src = pic(n.logo);
   $("#hName").textContent = n.nombre;
   $("#hSlogan").textContent = $("#heroSlogan").textContent = n.slogan;
   const parts = n.nombre.trim().split(/\s+/);
@@ -521,7 +525,7 @@ function renderSizes() {
     <div class="size">
       <span class="tag">${esc(s.nombre)}</span>
       <div class="cm">${esc(s.cm)} cm<small>DE DIÁMETRO</small></div>
-      <div class="pz"><img src="img/pepperoni.jpg" alt="" style="height:${Math.round(66 + 50 * s.cm / maxCm)}px"></div>
+      <div class="pz"><img src="${pic("img/pepperoni.jpg")}" alt="" style="height:${Math.round(66 + 50 * s.cm / maxCm)}px"></div>
       <div class="price">${money(s.precio)}</div>
       <div class="meta">2 pizzas · ${s.maxEsp > 1 ? "hasta " + s.maxEsp + " especialidades c/u" : "1 especialidad c/u"}</div>
       <button class="btn btn-o" data-size="${esc(s.id)}">Pedir 2x1</button>
@@ -534,7 +538,7 @@ function renderSizes() {
       <div class="sub">${esc(o.detalle)} · costo extra por pizza</div>
       <div class="ex">${list.map(s => `<div>${esc(s.nombre)}<b>+${money(s.orilla)}</b></div>`).join("")}</div>
     </div>
-    <img src="${esc(o.img)}" alt="Orilla rellena" loading="lazy">`;
+    <img src="${esc(pic(o.img))}" alt="Orilla rellena" loading="lazy">`;
 }
 
 function renderPromos() {
@@ -543,7 +547,7 @@ function renderPromos() {
   $("#promos").innerHTML = list.map(p => `
     <article class="promo">
       <div class="ph">
-        <img src="${esc(p.img)}" alt="Pizza ${esc(p.nombre)}" loading="lazy">
+        <img src="${esc(pic(p.img))}" alt="Pizza ${esc(p.nombre)}" loading="lazy">
         ${p.refresco ? `<span class="gift">🎁 Gratis 1 refresco ${esc(CFG.refrescos.tamano)}</span>` : ""}
         <span class="price">${money(p.precio)}</span>
       </div>
@@ -734,7 +738,7 @@ function openPromo(id) {
     title: "Pizza " + p.nombre,
     sub: `${p.especialidades} especialidad${p.especialidades > 1 ? "es" : ""}${p.rebanadas ? " · " + p.rebanadas + " rebanadas" : ""}${p.refresco ? " · refresco gratis" : ""}`,
     body: `
-      <div class="mimg"><img src="${esc(p.img)}" alt=""></div>
+      <div class="mimg"><img src="${esc(pic(p.img))}" alt=""></div>
       <label class="lbl">Especialidades <em>(hasta ${p.especialidades})</em></label>
       ${slotsHTML("pr", p.especialidades, st.esp)}
       <label class="tg"><span>🧀 Orilla rellena de queso ${+p.orilla ? `<b style="color:var(--orange)">+${money(p.orilla)}</b>` : `<b style="color:var(--ok)">sin costo</b>`}</span><input type="checkbox" id="mOr"><span class="sw"></span></label>
@@ -989,7 +993,7 @@ function openAdmin() {
     if (type === "area") return `<div class="f ${extra}"><small>${label}</small><textarea class="inp" data-p="${path}" rows="2">${esc(val)}</textarea></div>`;
     return `<div class="f ${extra}"><small>${label}</small><input class="inp" data-p="${path}" ${type === "number" ? 'type="number" step="any" data-t="num"' : 'type="text"'} value="${esc(val)}"></div>`;
   };
-  const IMG = (label, path) => `<div class="f full"><small>${label}</small><div class="imgprev"><img src="${esc(getPath(draft, path))}" alt="" data-prev="${path}"><div style="flex:1;display:grid;gap:6px"><input class="inp" data-p="${path}" value="${esc(getPath(draft, path))}" placeholder="URL o ruta (img/archivo.jpg)"><label class="btn btn-l btn-sm" style="justify-self:start">📷 Subir imagen<input type="file" accept="image/*" data-img="${path}" hidden></label></div></div></div>`;
+  const IMG = (label, path) => `<div class="f full"><small>${label}</small><div class="imgprev"><img src="${esc(pic(getPath(draft, path)))}" alt="" data-prev="${path}"><div style="flex:1;display:grid;gap:6px"><input class="inp" data-p="${path}" value="${esc(getPath(draft, path))}" placeholder="URL o ruta (img/archivo.jpg)"><label class="btn btn-l btn-sm" style="justify-self:start">📷 Subir imagen<input type="file" accept="image/*" data-img="${path}" hidden></label></div></div></div>`;
   const listHead = (list, i, name, len) => `<div class="ahead"><span class="n">${esc(name) || "(sin nombre)"}</span>
     <button class="ib" data-act="up" data-list="${list}" data-i="${i}" ${i ? "" : "disabled"} title="Subir">▲</button>
     <button class="ib" data-act="down" data-list="${list}" data-i="${i}" ${i < len - 1 ? "" : "disabled"} title="Bajar">▼</button>
@@ -1095,7 +1099,7 @@ function openAdmin() {
         if (t.dataset.t === "bool") v = t.checked;
         if (t.dataset.t === "list") v = v.split("\n").map(s => s.trim()).filter(Boolean);
         setPath(draft, p, v);
-        const prev = $(`[data-prev="${p}"]`, ov); if (prev) prev.src = v;
+        const prev = $(`[data-prev="${p}"]`, ov); if (prev) prev.src = pic(v);
         if (t.dataset.t === "bool") { const card = t.closest(".acard"); if (card && /\.activo$/.test(p)) card.classList.toggle("off", !v); }
         if (/\.nombre$/.test(p)) { const n = t.closest(".acard")?.querySelector(".ahead .n"); if (n) n.textContent = (p.startsWith("promos") ? "Pizza " : "") + v; }
         markDirty();
