@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
@@ -7,7 +8,10 @@ from app.api import auth, restaurantes, pedidos, chat, media, promociones, admin
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
-    description="API principal de Point Eats"
+    description="API principal de Point Eats",
+    # En Vercel la API se publica bajo /api (ver vercel.json). Con root_path,
+    # las rutas responden tanto en /api/auth/login como en /auth/login.
+    root_path=os.getenv("API_ROOT_PATH", "/api"),
 )
 
 app.add_middleware(

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { API_URL } from '../services/config'
 
 export default function Registro() {
   const navigate = useNavigate()
@@ -36,7 +37,7 @@ export default function Registro() {
     setCargando(true)
     setError('')
     try {
-      const res = await fetch('http://127.0.0.1:8000/auth/registro', {
+      const res = await fetch(`${API_URL}/auth/registro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

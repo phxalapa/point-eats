@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AdminNav } from './Admin'
 import axios from 'axios'
 
-const API = 'http://127.0.0.1:8000'
+import { API_URL as API } from '../services/config'
 
 const ESTADO_COLOR = {
   pendiente: { bg: '#FFF3E0', color: '#FF6B00' },

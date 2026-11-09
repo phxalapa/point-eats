@@ -3,7 +3,7 @@ import { restaurantesService } from '../services/api'
 import { NavInferior } from './Panel'
 import axios from 'axios'
 
-const API = 'http://127.0.0.1:8000'
+import { API_URL as API } from '../services/config'
 
 export default function PanelMenu() {
   const [menu, setMenu] = useState({})

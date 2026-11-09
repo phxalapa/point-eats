@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-const API = 'http://127.0.0.1:8000'
+import { API_URL as API } from '../services/config'
 
 const ESTADO_COLOR = {
   pendiente: '#FF6B00', confirmado: '#1565C0', preparando: '#6A1B9A',
