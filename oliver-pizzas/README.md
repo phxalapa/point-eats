@@ -22,6 +22,13 @@ Los cambios del panel se guardan en el navegador donde se hicieron. Para que los
 
 La página carga `menu.json` automáticamente si existe. (El PIN está en el código de la página, así que solo evita que un cliente edite por accidente; no es una protección fuerte.)
 
+## Publicar en Vercel (proyecto aparte)
+1. En el navegador (no la app de Vercel) entra a **vercel.com/new** e importa `phxalapa/point-eats`.
+2. En **Root Directory** elige **`oliver-pizzas`**. Framework: **Other**, sin build.
+3. **Deploy**. `oliver-pizzas/vercel.json` ya trae la configuración (sin build y `menu.json` sin caché).
+
+Este proyecto es independiente del de Point Eats (frontend + backend) que usa el `vercel.json` de la raíz.
+
 ## Probar localmente
 ```bash
 cd oliver-pizzas && python3 -m http.server 8000
